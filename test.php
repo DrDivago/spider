@@ -65,6 +65,7 @@ function constructLink($link)
 										$via = new Via($vie, $r);
 										$query = "INSERT INTO via (nome, grado, grado_proposto, ripetizioni, bellezza) VALUES('".$via->getNome()."','".$via->getGrado()."','".$via->getGradoProposto()."',1,1)";
 										echo "query: ".$query;
+
 										$db = new DbManager();
 										$db->connect();
 										$db->query($query);

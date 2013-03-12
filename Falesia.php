@@ -21,15 +21,12 @@ class Falesia {
 			if (strpos($element->href, "vie/"))
 			{
 				$via = new Via($element->href, $this->retriever);
-				echo "nome via: ".$via->getNome()." settore: ".$via->getSettore()."<br>";
-				$query = "INSERT into vie (nome, grado, grado_proposto, ripetizioni, id_falesia) VALUES (\"".$via->getNome()."\",'".$via->getGrado()."','".$via->getGradoProposto()."','"
+				$query = "INSERT into vie (nome, grado, grado_proposto, ripetizioni, id_falesia) VALUES (\"".htmlspecialchars_decode($via->getNome())."\",'".$via->getGrado()."','".$via->getGradoProposto()."','"
 				.$via->getRipetizioni()."','".$id_falesia."')";
-				echo "query: ".$query."<br>";
 
 				$db = new DbManager();
 				$db->connect();
 				$result = $db->query($query);
-
 			}
 		}
 	}
@@ -39,7 +36,6 @@ class Falesia {
 		$db = new DbManager();
 		$db->connect();
 		$query = "SELECT id from falesia where settore='".$this->getSettore()."' AND nome='".$this->getNomeFalesia()."'";
-		echo "query: ".$query."<br>";
 		$result = $db->query($query);
 		while($row = mysql_fetch_array($result))
   		{

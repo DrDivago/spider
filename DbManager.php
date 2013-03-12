@@ -12,6 +12,7 @@ class DbManager {
 		if ($this->attiva == false)
 		{
 			$connessione = mysql_connect($this->nomehost,$this->nomeuser,$this->password) or die('Could not connect: ' . mysql_error());
+			mysql_set_charset("UTF8", $connessione);
 			mysql_select_db("falesia", $connessione);
 			$this->attiva = true;
 		}

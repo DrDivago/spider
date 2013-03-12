@@ -37,81 +37,61 @@ function constructLink($link)
                         {
                                 return null;
                         }
-
                         $html = str_get_html($page);
 /*
 			foreach($html->find('tr') as $e)
 			{
-				$v = explode("\n", $e->plaintext);
-				$nome_settore = $v[1];
-				$num_vie = $v[2];
-				$s = explode(":", $nome_settore);
-				$pos = strpos($s[0], "Falesia");
-				if ( $pos === false)
+				echo "plaintext: ".$e->plaintext."<br>";
+				$p = strpos($e->plaintext, "Falesia");
+				if ( $p === false)
 				{
-//				echo "nome: ".$s[0]." numero vie: ".$num_vie." settore: ".$s[1]."<br>";
+				$pos = strrpos($e->plaintext, ' ', -4);
+				$num_vie = substr($e->plaintext, $pos);
+				$len_num_vie = strlen($num_vie);
+				$text = substr($e->plaintext, 0, strlen($e->plaintext)-$len_num_vie);
+				$v = explode(":", $text);
+				if ( count($v) > 1)
+				{
+					$settore = $v[1];
+				}
+				else
+				{
+					$settore = "";
+				}
+				echo "nome: ".$v[0]." settore: ".html_entity_decode($settore, ENT_QUOTES)." num_vie: ".$num_vie."<br>";
 
 	                                $db = new DbManager();
         	                        $db->connect();
-					$query = "INSERT INTO falesia (nome, regione, stato, settore, num_vie, coordinate) VALUES ('".$s[0]."','lazio'".",'italia'".",'".$s[1]."',".$num_vie.",'0.0')";
+					$query = "INSERT INTO falesia (nome, regione, stato, settore, num_vie, coordinate) VALUES (\"".trim(html_entity_decode($v[0], ENT_QUOTES))."\",'lazio'".",'italia'".",\"".trim(html_entity_decode($settore, ENT_QUOTES))."\",".$num_vie.",'0.0')";
 					echo "query: ".$query."<br>";
                                 	$db->query($query);
 				}
 			}	
-*/	
-
+*/
 			foreach($html->find('a') as $element)
 			{
 				if (strpos($element, "falesie"))
 				{
-					if (strpos($element, "bassiano-fascia-superiore"))
+					if (strpos($element, "eremo-di-san-michele"))
 					{
-						echo "element: ".$element->plaintext."<br>";
 						$el = explode(":", $element->plaintext);
-						$nome_falesia = $el[0];
-						$settore = $el[1];
+						if ( count($el) == 2)
+						{
+							$nome_falesia = $el[0];
+							$settore = $el[1];
+						}
+						else 
+						{
+							$nome_falesia = $el[0];
+							$settore = "";
+						}
 //						$via = new Via($element->href, $r);
 						$falesia = new Falesia($element->href, $r, $nome_falesia, $settore);
 //						echo "nome: ".$via->getNome()." settore: ".$via->getSettore()."<br>";
 					}
+					
 				}
 			}
-
-/*
-			foreach($html->find('a') as $element) 
-			{
-				if (strpos($element, "falesie"))
-				{
-				}
-				if (strpos($element, "bassiano-fascia-superiore"))
-				{	
-					$fal = $element->href;
-					$fal = $fal."/vie";
-					$url_vie = "http://www.climbook.com/".$fal;
-					$page = $r->getHTMLPageFromURL($url_vie);
-					if ( $page !== false)
-					{
-						$html_vie = str_get_html($page);
-						foreach($html_vie->find('a') as $vie)
-						{	
-							if (strpos($vie->href, "vie"))
-							{
-								$nome_via = checkValid($vie);
-								if ( $nome_via !== null)
-								{
-									$pos = strpos($nome_via, "avanzi");
-									if ($pos !== false)
-									{
-										$via = new Via($vie, $r);
-										echo "rip: ".$via->getRipetizioni();
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-*/
 
 ?>
 </body>

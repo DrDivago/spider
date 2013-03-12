@@ -11,14 +11,18 @@ class DbManager {
 	public function connect() {
 		if ($this->attiva == false)
 		{
-			$this->connessione = mysql_connect($this->nomehost,$this->nomeuser,$this->password);	
-			mysql_select_db("falesie");
+			$connessione = mysql_connect($this->nomehost,$this->nomeuser,$this->password) or die('Could not connect: ' . mysql_error());
+			mysql_select_db("falesia", $connessione);
+			$this->attiva = true;
 		}
 	}
+	
 
 	public function query($query) {
 		$risultato = mysql_query($query)
     			or die("Query non valida: " . mysql_error());	
+		return $risultato;
 	}
+
 }
 ?>

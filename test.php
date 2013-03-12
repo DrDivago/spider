@@ -10,6 +10,7 @@ include_once 'Retriever.php';
 include_once 'simple_html_dom.php';
 include_once 'Via.php';
 include_once 'DbManager.php';
+include_once 'Falesia.php';
 
 function checkValid($vie)
 {
@@ -38,11 +39,50 @@ function constructLink($link)
                         }
 
                         $html = str_get_html($page);
-	
+/*
+			foreach($html->find('tr') as $e)
+			{
+				$v = explode("\n", $e->plaintext);
+				$nome_settore = $v[1];
+				$num_vie = $v[2];
+				$s = explode(":", $nome_settore);
+				$pos = strpos($s[0], "Falesia");
+				if ( $pos === false)
+				{
+//				echo "nome: ".$s[0]." numero vie: ".$num_vie." settore: ".$s[1]."<br>";
 
+	                                $db = new DbManager();
+        	                        $db->connect();
+					$query = "INSERT INTO falesia (nome, regione, stato, settore, num_vie, coordinate) VALUES ('".$s[0]."','lazio'".",'italia'".",'".$s[1]."',".$num_vie.",'0.0')";
+					echo "query: ".$query."<br>";
+                                	$db->query($query);
+				}
+			}	
+*/	
+
+			foreach($html->find('a') as $element)
+			{
+				if (strpos($element, "falesie"))
+				{
+					if (strpos($element, "bassiano-fascia-superiore"))
+					{
+						echo "element: ".$element->plaintext."<br>";
+						$el = explode(":", $element->plaintext);
+						$nome_falesia = $el[0];
+						$settore = $el[1];
+//						$via = new Via($element->href, $r);
+						$falesia = new Falesia($element->href, $r, $nome_falesia, $settore);
+//						echo "nome: ".$via->getNome()." settore: ".$via->getSettore()."<br>";
+					}
+				}
+			}
+
+/*
 			foreach($html->find('a') as $element) 
 			{
-				#if (strpos($element, "falesie"))
+				if (strpos($element, "falesie"))
+				{
+				}
 				if (strpos($element, "bassiano-fascia-superiore"))
 				{	
 					$fal = $element->href;
@@ -63,12 +103,7 @@ function constructLink($link)
 									if ($pos !== false)
 									{
 										$via = new Via($vie, $r);
-										$query = "INSERT INTO via (nome, grado, grado_proposto, ripetizioni, bellezza) VALUES('".$via->getNome()."','".$via->getGrado()."','".$via->getGradoProposto()."',1,1)";
-										echo "query: ".$query;
-
-										$db = new DbManager();
-										$db->connect();
-										$db->query($query);
+										echo "rip: ".$via->getRipetizioni();
 									}
 								}
 							}
@@ -76,6 +111,7 @@ function constructLink($link)
 					}
 				}
 			}
+*/
 
 ?>
 </body>

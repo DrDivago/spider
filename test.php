@@ -1,34 +1,14 @@
 <html>
 <head><title>xmlrpc</title></head>
 <body>
-<h1>Getstatename demo</h1>
-<h2>Send a U.S. state number to the server and get back the state name</h2>
-<h3>The code demonstrates usage of the php_xmlrpc_encode function</h3>
 <?php
-set_time_limit(600);
+set_time_limit(0);
 include_once 'Retriever.php';
 include_once 'simple_html_dom.php';
 include_once 'Via.php';
 include_once 'DbManager.php';
 include_once 'Falesia.php';
 
-function checkValid($vie)
-{
-	$ret = null;
-        $pieces = explode("/", $vie->href);
-        if (count($pieces) > 2)
-        {
-        	$nome_via = strstr($pieces[2], "-");
-                $ret = trim(str_replace("-", " ", $nome_via));
-        }
-        return $ret;
-}
-
-function constructLink($link)
-{
-	$url_vie = "http://www.climbook.com".$link;
-	return $url_vie;
-}
 
 			$r = new Retriever();
 			$url = "http://www.climbook.com/regioni/1-ita-lazio/falesie";
@@ -74,8 +54,9 @@ function constructLink($link)
 			{
 				if (strpos($element, "falesie"))
 				{
-//					if (strpos($element, "eremo-di-san-michele"))
-//					{
+					//if( (strpos($element, "eremo-di-san-michele")) || (strpos($element, "eremo-di-san-leonardo")) )
+					if( strpos($element, "Falesie") === false )
+					{
 						$el = explode(":", $element->plaintext);
 						if ( count($el) == 2)
 						{
@@ -87,11 +68,12 @@ function constructLink($link)
 							$nome_falesia = $el[0];
 							$settore = "";
 						}
-//						$via = new Via($element->href, $r);
 						
-						$falesia = new Falesia($element->href, $r, $nome_falesia, $settore, $db);
-//						echo "nome: ".$via->getNome()." settore: ".$via->getSettore()."<br>";
-//					}
+						$falesia = new Falesia($element->href,$nome_falesia, $settore, $db);
+						$falesia->connect();
+						$falesia->extract_dati();
+//						echo "nome: ".$nome_falesia." settore: ".$settore." id_falesia: ".$id_falesia."<br>";
+					}
 					
 				}
 			}

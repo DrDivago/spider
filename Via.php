@@ -7,16 +7,17 @@ class Via {
 	private $regione;
 	private $link_value;
 	private $html;
-	private $retriever;
-	public function __construct($link_value, $retriever) {	
+	public function __construct($link_value) {	
 		$this->link_value = $link_value;
-		$this->retriever = $retriever;
-		$this->html = $this->connect();
-		$this->extract_dati();
+	}
+
+
+	public function clear()
+	{
 		$this->html->clear(); 
 		unset($this->html);
 	}
-	private function extract_dati()
+	public function extract_dati()
 	{
 		$notes = $this->html->find('dd[class=notes]');
 		$testo = $this->html->find('dd');
@@ -25,7 +26,7 @@ class Via {
 		$this->settore = $testo[1]->plaintext;
 		$this->regione = $testo[2]->plaintext;
 		
-		if (strpos($notes[0], " ") !== false)
+		if ( count($notes) > 0)
 		{
 			$this->grado = $testo[4]->plaintext;
 			$this->grado_ufficiale = $testo[5]->plaintext;
@@ -58,16 +59,9 @@ class Via {
         	return $url_vie;
 	}
 
-	private function connect() {
+	public function connect() {
 		$url = $this->constructLink($this->getLink());
-                $page = file_get_html($url);
-                if ($page==false)
-                {
-                	return null;
-                }
-
-		return $page;
-
+                $this->html = file_get_html($url);
 	}
 
 	public function getGrado()

@@ -2,48 +2,55 @@
 class Falesia {
 	private $link_value;
 	private $html;
-	private $retriever;
 	private $nome_falesia;
 	private $settore;
 	private $db;
-	public function __construct($link_value, $retriever, $nome_falesia, $settore, $db) {	
+	public function __construct($link_value, $nome_falesia, $settore, $db) {	
 		$this->nome_falesia = $nome_falesia;
 		$this->settore = $settore;
 		$this->link_value = $link_value;
-		$this->retriever = $retriever;
-		$this->html = $this->connect();
 		$this->db = $db; 
-		$this->extract_dati();
 	}
 
-	private function queryDb()
+	private function queryDb($nome, $grado, $grado_proposto, $ripetizioni, $id_falesia)
 	{
-		$query = "INSERT into vie (nome, grado, grado_proposto, ripetizioni, id_falesia) VALUES (\"".htmlspecialchars_decode($via->getNome())."\",'".$via->getGrado()."','".$via->getGradoProposto()."','"
-                .$via->getRipetizioni()."','".$id_falesia."')";
-
-                $result = $this->db->query($query);
+		
+		$query = "INSERT into vie (nome, grado, grado_proposto, ripetizioni, id_falesia) VALUES (\"".html_entity_decode(trim($nome), ENT_QUOTES )."\",'".$grado."','".$grado_proposto."','"
+                .$ripetizioni."','".$id_falesia."')";
+		
+               $result = $this->db->query($query);
 	}
 
-	private function extract_dati()
+	public function extract_dati()
 	{
+		$list_vie = array();
 		$id_falesia = $this->getIdFalesia();
-		echo "nome falesia: ".$nome_falesia." id_falesia: ".$id_falesia."<br>";
+		echo "nome falesia: ".$this->nome_falesia." id_falesia: ".$id_falesia."<br>";
 		foreach($this->html->find('a') as $element)
 		{
 			if (strpos($element->href, "vie/"))
 			{
-				$via = new Via($element->href, $this->retriever);
-				sleep(1);
-
+				$via = new Via($element->href);
+				$via->connect();
+				sleep(2);
+				$via->extract_dati();
+				$list_vie[] = $via;
 			}
+		}
+
+
+		foreach($list_vie as $v)
+		{
+			$this->queryDb($v->getNome(), $v->getGrado(), $v->getGradoProposto(), $v->getRipetizioni(), $id_falesia);
+			$v->clear();
 		}
 		$this->html->clear(); 
 		unset($this->html);
 	}
 
-	private function getIdFalesia()
+	public function getIdFalesia()
 	{
-		$query = "SELECT id from falesia where settore='".$this->getSettore()."' AND nome='".$this->getNomeFalesia()."'";
+		$query = "SELECT id from falesia where settore=\"".html_entity_decode(trim($this->getSettore()), ENT_QUOTES )."\" AND nome=\"".html_entity_decode(trim($this->getNomeFalesia()) )."\"";
 		$result = $this->db->query($query);
 		while($row = mysql_fetch_array($result))
   		{
@@ -60,23 +67,16 @@ class Falesia {
 		return $this->settore;
 	}
 
-	private function constructLink($link)
+	public function constructLink($link)
 	{
 	        $url_vie = "http://www.climbook.com".$link."/vie";
         	return $url_vie;
 	}
 
-	private function connect() {
+	public function connect() {
 		$url = $this->constructLink($this->getLink());
 		echo "URL: ".$url."<br>";
-                $page = file_get_html($url);
-                if ($page==false)
-                {
-                	return null;
-                }
-
-		return $page;
-
+                $this->html = file_get_html($url);
 	}
 	public function getLink()
 	{

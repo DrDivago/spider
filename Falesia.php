@@ -15,7 +15,7 @@ class Falesia {
 	private function queryDb($nome, $grado, $grado_proposto, $ripetizioni, $id_falesia)
 	{
 		
-		$query = "INSERT into vie (nome, grado, grado_proposto, ripetizioni, id_falesia) VALUES (\"".html_entity_decode(trim($nome), ENT_QUOTES )."\",'".$grado."','".$grado_proposto."','"
+		$query = "INSERT into vie (nome, grado, grado_proposto, ripetizioni, id_falesia) VALUES (\"".addslashes(html_entity_decode(trim($nome), ENT_QUOTES ))."\",'".$grado."','".$grado_proposto."','"
                 .$ripetizioni."','".$id_falesia."')";
 		
                $result = $this->db->query($query);
@@ -46,6 +46,7 @@ class Falesia {
 		}
 		$this->html->clear(); 
 		unset($this->html);
+		unset($list_vie);
 	}
 
 	public function getIdFalesia()

@@ -54,7 +54,7 @@ include_once 'Falesia.php';
 			{
 				if (strpos($element, "falesie"))
 				{
-					//if( (strpos($element, "eremo-di-san-michele")) || (strpos($element, "eremo-di-san-leonardo")) )
+//					if( (strpos($element, "grotti-bassa")))
 					if( strpos($element, "Falesie") === false )
 					{
 						$el = explode(":", $element->plaintext);

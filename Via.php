@@ -13,34 +13,42 @@ class Via {
 		$this->retriever = $retriever;
 		$this->html = $this->connect();
 		$this->extract_dati();
+		$this->html->clear(); 
+		unset($this->html);
 	}
 	private function extract_dati()
 	{
-                $testo = $this->html->find('dd');
-
-		foreach($testo as $t)
-		{
-			echo "t: ".$t->plaintext;
-			echo "####NEXT###<br>";
-		}
+		$notes = $this->html->find('dd[class=notes]');
+		$testo = $this->html->find('dd');
+		
 		$this->nome = $testo[0]->plaintext;
 		$this->settore = $testo[1]->plaintext;
 		$this->regione = $testo[2]->plaintext;
-		$this->grado = $testo[3]->plaintext;
-		$this->grado_proposto = $testo[4]->plaintext;
-		if (count($testo) == 6)
-		{
-			$this->ripetizioni = $testo[5]->plaintext;
-		}
-		else if (count($testo) == 8)
+		
+		if (strpos($notes[0], " ") !== false)
 		{
 			$this->grado = $testo[4]->plaintext;
-			$this->grado_proposto = $testo[5]->plaintext;
-			$this->ripetizioni = $testo[7]->plaintext;
+			$this->grado_ufficiale = $testo[5]->plaintext;
 		}
 		else
 		{
-			$this->ripetizioni = $testo[6]->plaintext;
+			$this->grado = $testo[3]->plaintext;
+			$this->grado_proposto = $testo[4]->plaintext;
+			if (count($testo) == 6)
+			{
+				$this->ripetizioni = $testo[5]->plaintext;
+			}
+			else if (count($testo) == 8)
+			{
+				$this->grado = $testo[4]->plaintext;
+				$this->grado_proposto = $testo[5]->plaintext;
+				$this->ripetizioni = $testo[7]->plaintext;
+
+			}
+			else
+			{
+				$this->ripetizioni = $testo[6]->plaintext;
+			}
 		}
 	}
 
@@ -51,16 +59,14 @@ class Via {
 	}
 
 	private function connect() {
-		echo "connect!<br>";
 		$url = $this->constructLink($this->getLink());
-                $page = $this->retriever->getHTMLPageFromURL($url);
+                $page = file_get_html($url);
                 if ($page==false)
                 {
                 	return null;
                 }
 
-                $html =  str_get_html($page);
-		return $html;
+		return $page;
 
 	}
 

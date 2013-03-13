@@ -11,9 +11,9 @@ class DbManager {
 	public function connect() {
 		if ($this->attiva == false)
 		{
-			$connessione = mysql_connect($this->nomehost,$this->nomeuser,$this->password) or die('Could not connect: ' . mysql_error());
-			mysql_set_charset("UTF8", $connessione);
-			mysql_select_db("falesia", $connessione);
+			$this->connessione = mysql_connect($this->nomehost,$this->nomeuser,$this->password) or die('Could not connect: ' . mysql_error());
+			mysql_set_charset("UTF8", $this->connessione);
+			mysql_select_db("falesia", $this->connessione);
 			$this->attiva = true;
 		}
 	}
@@ -23,6 +23,10 @@ class DbManager {
 		$risultato = mysql_query($query)
     			or die("Query non valida: " . mysql_error());	
 		return $risultato;
+	}
+	public function disconnect()
+	{
+		mysql_close($this->connessione);
 	}
 
 }

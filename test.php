@@ -5,7 +5,7 @@
 <h2>Send a U.S. state number to the server and get back the state name</h2>
 <h3>The code demonstrates usage of the php_xmlrpc_encode function</h3>
 <?php
-
+set_time_limit(600);
 include_once 'Retriever.php';
 include_once 'simple_html_dom.php';
 include_once 'Via.php';
@@ -68,12 +68,14 @@ function constructLink($link)
 				}
 			}	
 */
+			$db = new DbManager();
+			$db->connect();
 			foreach($html->find('a') as $element)
 			{
 				if (strpos($element, "falesie"))
 				{
-					if (strpos($element, "eremo-di-san-michele"))
-					{
+//					if (strpos($element, "eremo-di-san-michele"))
+//					{
 						$el = explode(":", $element->plaintext);
 						if ( count($el) == 2)
 						{
@@ -86,13 +88,14 @@ function constructLink($link)
 							$settore = "";
 						}
 //						$via = new Via($element->href, $r);
-						$falesia = new Falesia($element->href, $r, $nome_falesia, $settore);
+						
+						$falesia = new Falesia($element->href, $r, $nome_falesia, $settore, $db);
 //						echo "nome: ".$via->getNome()." settore: ".$via->getSettore()."<br>";
-					}
+//					}
 					
 				}
 			}
-
+			$db->disconnect();
 ?>
 </body>
 </html>
